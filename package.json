@@ -75,7 +75,7 @@
 		"watch": "tsc -watch -p ./",
 		"postinstall": "node ./node_modules/vscode/bin/install",
 		"test": "mocha --ui tdd -r ts-node/register src/test/**/*.test.ts",
-		"test_coverage": "npx nyc -r cobertura -e .ts -x \"*.test.ts\" mocha --ui tdd -r ts-node/register src/test/**/*.test.ts --reporter mocha-junit-reporter && npx nyc report"
+		"test_coverage": "nyc -r cobertura -e .ts -x \"*.test.ts\" mocha --ui tdd -r ts-node/register src/test/**/*.test.ts --reporter mocha-junit-reporter && nyc report"
 	},
 	"devDependencies": {
 		"@istanbuljs/nyc-config-typescript": "^0.1.3",
