@@ -1,27 +1,70 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+'use strict';
+
 import * as vscode from 'vscode';
+import * as azdev from 'azure-devops-node-api';
+import { getReport } from './build';
+import { BuildTreeProvider } from './treeProvider';
+import { Build } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+	let panel: vscode.WebviewPanel | undefined;
+	context.subscriptions.push(vscode.commands.registerCommand('extension.showBuildReport', async (build: Build) => {
+		panel = panel || vscode.window.createWebviewPanel(
+			'buildReport',
+			'Build Report',
+			vscode.ViewColumn.Beside,
+			{}
+		);
+		panel.onDidDispose(() => {
+			panel = undefined;
+		});
+		panel.webview.html = `<!DOCTYPE html>
+	<html>
+	<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style>
+	.loader {
+	  border: 16px solid #f3f3f3;
+	  border-radius: 50%;
+	  border-top: 16px solid #3498db;
+	  width: 50px;
+	  height: 50px;
+	  -webkit-animation: spin 2s linear infinite; /* Safari */
+	  animation: spin 2s linear infinite;
+	}
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-		console.log('Congratulations, your extension "azure-build-pipelines" is now active!');
+	/* Safari */
+	@-webkit-keyframes spin {
+	  0% { -webkit-transform: rotate(0deg); }
+	  100% { -webkit-transform: rotate(360deg); }
+	}
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('extension.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
+	@keyframes spin {
+	  0% { transform: rotate(0deg); }
+	  100% { transform: rotate(360deg); }
+	}
+	</style>
+	</head>
+	<body>
+	<div class="loader"></div>
+	</body>
+	</html>
+	`;
 
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World!');
-	});
+		const html = await getReport(build);
+		panel.webview.html = html;
+	}));
 
-	context.subscriptions.push(disposable);
+	const treeDataProvider = new BuildTreeProvider();
+	const treeView = vscode.window.createTreeView('buildExplorer', { treeDataProvider });
+	context.subscriptions.push(treeView);
+	context.subscriptions.push(vscode.commands.registerCommand('extension.refreshBuilds', treeDataProvider.refresh, treeDataProvider));
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
+
+

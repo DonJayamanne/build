@@ -20,10 +20,11 @@
 		"vscode": "^1.33.0"
 	},
 	"categories": [
-		"Other"
+		"Other",
+		"Azure"
 	],
 	"activationEvents": [
-		"onCommand:extension.helloWorld"
+		"*"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -31,8 +32,42 @@
 			{
 				"command": "extension.helloWorld",
 				"title": "Hello World"
+			},
+			{
+				"command": "extension.refreshBuilds",
+				"title": "Refresh",
+				"icon": {
+					"light": "assets/light/refresh.svg",
+					"dark": "assets/dark/refresh.svg"
+				}
 			}
-		]
+		],
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "azure-pipeline-explorer",
+					"title": "Azure Pipelines",
+					"icon": "assets/dark/azurePipeline.svg"
+				}
+			]
+		},
+		"views": {
+			"azure-pipeline-explorer": [
+				{
+					"id": "buildExplorer",
+					"name": "Builds"
+				}
+			]
+		},
+		"menus": {
+			"view/title": [
+				{
+					"command": "extension.refreshBuilds",
+					"when": "view == buildExplorer",
+					"group": "navigation"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
@@ -47,5 +82,8 @@
 		"tslint": "^5.12.1",
 		"@types/node": "^10.12.21",
 		"@types/mocha": "^2.2.42"
+	},
+	"dependencies": {
+		"azure-devops-node-api": "^8.0.0"
 	}
 }
