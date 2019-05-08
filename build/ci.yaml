@@ -69,6 +69,22 @@ jobs:
         displayName: 'Run tests'
         env:
           DISPLAY: :10
+      - task: Npm@1
+        displayName: 'Tests with coverage'
+        inputs:
+          command: custom
+          verbose: false
+          customCommand: 'run test_coverage'
+      - task: PublishTestResults@2
+        condition: succeededOrFailed()
+        inputs:
+          testRunner: JUnit
+          testResultsFiles: '**/test-results.xml'
+      - task: PublishCodeCoverageResults@1
+        inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/*coverage.xml'
+          reportDirectory: '$(System.DefaultWorkingDirectory)/coverage/*coverage.xml'
   - job: Build
     dependsOn:
       - Windows

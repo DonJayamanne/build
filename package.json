@@ -74,14 +74,21 @@
 		"compile": "tsc -p ./",
 		"watch": "tsc -watch -p ./",
 		"postinstall": "node ./node_modules/vscode/bin/install",
-		"test": "npm run compile && node ./node_modules/vscode/bin/test"
+		"test": "mocha --ui tdd -r ts-node/register src/test/**/*.test.ts",
+		"test_coverage": "npx nyc -r cobertura -e .ts -x \"*.test.ts\" mocha --ui tdd -r ts-node/register src/test/**/*.test.ts --reporter mocha-junit-reporter && npx nyc report"
 	},
 	"devDependencies": {
-		"typescript": "^3.3.1",
-		"vscode": "^1.1.28",
-		"tslint": "^5.12.1",
+		"@istanbuljs/nyc-config-typescript": "^0.1.3",
+		"@types/mocha": "^2.2.42",
 		"@types/node": "^10.12.21",
-		"@types/mocha": "^2.2.42"
+		"@types/sinon": "^7.0.11",
+		"mocha-junit-reporter": "^1.22.0",
+		"nyc": "^14.1.0",
+		"sinon": "^7.3.2",
+		"ts-node": "^8.1.0",
+		"tslint": "^5.12.1",
+		"typescript": "^3.3.1",
+		"vscode": "^1.1.28"
 	},
 	"dependencies": {
 		"azure-devops-node-api": "^8.0.0"
